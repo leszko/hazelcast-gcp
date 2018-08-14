@@ -16,7 +16,9 @@
 
 package com.hazelcast.gcp;
 
+import com.hazelcast.config.InvalidConfigurationException;
 import com.hazelcast.logging.ILogger;
+import com.hazelcast.logging.Logger;
 import com.hazelcast.spi.discovery.AbstractDiscoveryStrategy;
 import com.hazelcast.spi.discovery.DiscoveryNode;
 import com.hazelcast.spi.discovery.DiscoveryStrategy;
@@ -24,14 +26,29 @@ import com.hazelcast.spi.discovery.DiscoveryStrategy;
 import java.util.Map;
 
 /**
- * GCP implementation of {@link DiscoveryStrategy}
+ * GCP implementation of {@link DiscoveryStrategy}.
  */
 public class GcpDiscoveryStrategy
         extends AbstractDiscoveryStrategy {
+    private static final ILogger LOGGER = Logger.getLogger(GcpDiscoveryStrategy.class);
 
-    public GcpDiscoveryStrategy(ILogger logger,
-                                Map<String, Comparable> properties) {
-        super(logger, properties);
+    private final GcpClient gcpClient;
+
+    public GcpDiscoveryStrategy(Map<String, Comparable> properties) {
+        super(LOGGER, properties);
+        try {
+            this.gcpClient = new GcpClient(properties);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidConfigurationException("Invalid GCP Discovery Strategy configuration", e);
+        }
+    }
+
+    /**
+     * For test purposes only.
+     */
+    GcpDiscoveryStrategy(Map<String, Comparable> properties, GcpClient gcpClient) {
+        super(LOGGER, properties);
+        this.gcpClient = gcpClient;
     }
 
     @Override

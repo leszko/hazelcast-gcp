@@ -16,22 +16,10 @@
 
 package com.hazelcast.gcp;
 
-import org.junit.Test;
-
-import java.util.HashMap;
 import java.util.Map;
 
-public class GcpDiscoveryStrategyTest {
+public class GcpClient {
+    public GcpClient(Map<String, Comparable> properties) {
 
-    @Test
-    public void newValidProperties() {
-        // given
-        Map<String, Comparable> properties = new HashMap<String, Comparable>();
-
-        // when
-        new GcpDiscoveryStrategy(properties);
-
-        // then
-        // no exception
     }
 }
