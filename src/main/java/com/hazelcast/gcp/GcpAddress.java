@@ -16,15 +16,28 @@
 
 package com.hazelcast.gcp;
 
-import java.util.List;
-import java.util.Map;
+class GcpAddress {
+    private final String privateAddress;
+    private final String publicAddress;
 
-class GcpClient {
-    GcpClient(Map<String, Comparable> properties) {
-
+    public GcpAddress(String privateAddress, String publicAddress) {
+        this.privateAddress = privateAddress;
+        this.publicAddress = publicAddress;
     }
 
-    public List<GcpAddress> getAddresses() {
-        return null;
+    public String getPrivateAddress() {
+        return privateAddress;
+    }
+
+    public String getPublicAddress() {
+        return publicAddress;
+    }
+
+    @Override
+    public String toString() {
+        return "GcpAddress{" +
+                "privateAddress='" + privateAddress + '\'' +
+                ", publicAddress='" + publicAddress + '\'' +
+                '}';
     }
 }

@@ -53,15 +53,25 @@ enum GcpProperties {
      * <p>
      * The default value is "5701-5708".
      */
-    PORT("hz-port", STRING, true);
+    PORT("hz-port", STRING, true, "5701-5708");
 
     private final PropertyDefinition propertyDefinition;
+    private final Comparable defaultValue;
+
+    GcpProperties(String key, PropertyTypeConverter typeConverter, boolean optional, Comparable defaultValue) {
+        this.propertyDefinition = new SimplePropertyDefinition(key, optional, typeConverter);
+        this.defaultValue = defaultValue;
+    }
 
     GcpProperties(String key, PropertyTypeConverter typeConverter, boolean optional) {
-        this.propertyDefinition = new SimplePropertyDefinition(key, optional, typeConverter);
+        this(key, typeConverter, optional, null);
     }
 
     PropertyDefinition getDefinition() {
         return propertyDefinition;
+    }
+
+    Comparable getDefaultValue() {
+        return defaultValue;
     }
 }

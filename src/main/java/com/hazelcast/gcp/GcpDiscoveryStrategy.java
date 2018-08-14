@@ -19,11 +19,19 @@ package com.hazelcast.gcp;
 import com.hazelcast.config.InvalidConfigurationException;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
+import com.hazelcast.nio.Address;
 import com.hazelcast.spi.discovery.AbstractDiscoveryStrategy;
 import com.hazelcast.spi.discovery.DiscoveryNode;
 import com.hazelcast.spi.discovery.DiscoveryStrategy;
+import com.hazelcast.spi.discovery.SimpleDiscoveryNode;
 
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+
+import static com.hazelcast.gcp.GcpProperties.PORT;
 
 /**
  * GCP implementation of {@link DiscoveryStrategy}.
@@ -33,11 +41,13 @@ public class GcpDiscoveryStrategy
     private static final ILogger LOGGER = Logger.getLogger(GcpDiscoveryStrategy.class);
 
     private final GcpClient gcpClient;
+    private final PortRange portRange;
 
     public GcpDiscoveryStrategy(Map<String, Comparable> properties) {
         super(LOGGER, properties);
         try {
             this.gcpClient = new GcpClient(properties);
+            this.portRange = createPortRange();
         } catch (IllegalArgumentException e) {
             throw new InvalidConfigurationException("Invalid GCP Discovery Strategy configuration", e);
         }
@@ -49,10 +59,47 @@ public class GcpDiscoveryStrategy
     GcpDiscoveryStrategy(Map<String, Comparable> properties, GcpClient gcpClient) {
         super(LOGGER, properties);
         this.gcpClient = gcpClient;
+        this.portRange = createPortRange();
+    }
+
+    private PortRange createPortRange() {
+        return new PortRange((String) getOrDefault(PORT.getDefinition(), PORT.getDefaultValue()));
     }
 
     @Override
     public Iterable<DiscoveryNode> discoverNodes() {
-        return null;
+        try {
+            List<GcpAddress> gcpAddresses = gcpClient.getAddresses();
+            logGcpAddresses(gcpAddresses);
+
+            List<DiscoveryNode> result = new ArrayList<DiscoveryNode>();
+            for (GcpAddress gcpAddress : gcpAddresses) {
+                for (int port = portRange.getFromPort(); port <= portRange.getToPort(); port++) {
+                    result.add(createDiscoveryNode(gcpAddress, port));
+                }
+            }
+
+            return result;
+        } catch (Exception e) {
+            LOGGER.warning("Cannot discover nodes, returning empty list", e);
+            return Collections.emptyList();
+        }
+    }
+
+    private static DiscoveryNode createDiscoveryNode(GcpAddress gcpAddress, int port)
+            throws UnknownHostException {
+        Address privateAddress = new Address(gcpAddress.getPrivateAddress(), port);
+        Address publicAddress = new Address(gcpAddress.getPublicAddress(), port);
+        return new SimpleDiscoveryNode(privateAddress, publicAddress);
+    }
+
+    private static void logGcpAddresses(List<GcpAddress> gcpAddresses) {
+        if (LOGGER.isFinestEnabled()) {
+            StringBuilder stringBuilder = new StringBuilder("Found the following GCP instance: ");
+            for (GcpAddress gcpAddress : gcpAddresses) {
+                stringBuilder.append(String.format("%s, ", gcpAddress));
+            }
+            LOGGER.finest(stringBuilder.toString());
+        }
     }
 }
