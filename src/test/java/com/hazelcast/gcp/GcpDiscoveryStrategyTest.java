@@ -55,6 +55,8 @@ public class GcpDiscoveryStrategyTest {
     public void newValidProperties() {
         // given
         Map<String, Comparable> properties = new HashMap<String, Comparable>();
+        properties.put("projects", "project1");
+        properties.put("zones", "us-east1-b");
 
         // when
         new GcpDiscoveryStrategy(properties);

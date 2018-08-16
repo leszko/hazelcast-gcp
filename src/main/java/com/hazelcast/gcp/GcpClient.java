@@ -25,13 +25,15 @@ class GcpClient {
     private static final int RETRIES = 10;
 
     private final GcpMetadataApi gcpMetadataApi;
+    private final GcpComputeApi gcpComputeApi;
 
     private final List<String> projects;
     private final List<String> zones;
     private final String label;
 
-    GcpClient(GcpMetadataApi gcpMetadataApi, GcpConfig gcpConfig) {
+    GcpClient(GcpMetadataApi gcpMetadataApi, GcpComputeApi gcpComputeApi, GcpConfig gcpConfig) {
         this.gcpMetadataApi = gcpMetadataApi;
+        this.gcpComputeApi = gcpComputeApi;
 
         projects = projectFromConfigOrMetadataApi(gcpConfig);
         zones = null;

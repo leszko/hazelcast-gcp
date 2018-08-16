@@ -26,8 +26,6 @@ import java.util.List;
 class GcpComputeApi {
     private static final String GOOGLE_API_ENDPOINT = "https://www.googleapis.com";
 
-    private static final int HTTP_OK = 200;
-
     private final String endpoint;
 
     GcpComputeApi() {
@@ -81,14 +79,6 @@ class GcpComputeApi {
             return new JsonArray();
         } else {
             return jsonValue.asArray();
-        }
-    }
-
-    private static String toString(JsonValue jsonValue) {
-        if (jsonValue.isString()) {
-            return jsonValue.asString();
-        } else {
-            return jsonValue.toString();
         }
     }
 }

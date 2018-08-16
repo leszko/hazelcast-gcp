@@ -52,20 +52,6 @@ public class GcpMetadataApiTest {
         assertEquals(PROJECT, result);
     }
 
-    @Test(expected = GcpApiException.class)
-    public void currentProjectFailure() {
-        // given
-        stubFor(get(urlEqualTo("/computeMetadata/v1/project/project-id"))
-                .withHeader("Metadata-Flavor", equalTo("Google"))
-                .willReturn(aResponse().withStatus(500).withBody("Internal error")));
-
-        // when
-        gcpMetadataApi.currentProject();
-
-        // then
-        // throw exception
-    }
-
     @Test
     public void currentZone() {
         // given
@@ -78,20 +64,6 @@ public class GcpMetadataApiTest {
 
         // then
         assertEquals(ZONE, result);
-    }
-
-    @Test(expected = GcpApiException.class)
-    public void currentZoneFailure() {
-        // given
-        stubFor(get(urlEqualTo("/computeMetadata/v1/instance/zone"))
-                .withHeader("Metadata-Flavor", equalTo("Google"))
-                .willReturn(aResponse().withStatus(500).withBody("Internal error")));
-
-        // when
-        gcpMetadataApi.currentZone();
-
-        // then
-        // throw exception
     }
 
     private static String zoneResponse(String zone) {
@@ -111,20 +83,6 @@ public class GcpMetadataApiTest {
 
         // then
         assertEquals(ACCESS_TOKEN, result);
-    }
-
-    @Test(expected = GcpApiException.class)
-    public void accessTokenFailure() {
-        // given
-        stubFor(get(urlEqualTo("/computeMetadata/v1/instance/service-accounts/default/token"))
-                .withHeader("Metadata-Flavor", equalTo("Google"))
-                .willReturn(aResponse().withStatus(500).withBody("Internal error")));
-
-        // when
-        gcpMetadataApi.accessToken();
-
-        // then
-        // throw exception
     }
 
     private static String accessTokenResponse(String accessToken) {

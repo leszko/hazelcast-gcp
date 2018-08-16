@@ -52,7 +52,8 @@ public class GcpDiscoveryStrategy
         try {
             GcpConfig gcpConfig = createGcpConfig();
             GcpMetadataApi gcpMetadataApi = new GcpMetadataApi();
-            this.gcpClient = new GcpClient(gcpMetadataApi, gcpConfig);
+            GcpComputeApi gcpComputeApi = new GcpComputeApi();
+            this.gcpClient = new GcpClient(gcpMetadataApi, gcpComputeApi, gcpConfig);
             this.portRange = gcpConfig.getHzPort();
         } catch (IllegalArgumentException e) {
             throw new InvalidConfigurationException("Invalid GCP Discovery Strategy configuration", e);
