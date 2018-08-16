@@ -34,6 +34,30 @@ final class GcpAddress {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        GcpAddress that = (GcpAddress) o;
+
+        if (privateAddress != null ? !privateAddress.equals(that.privateAddress) : that.privateAddress != null) {
+            return false;
+        }
+        return publicAddress != null ? publicAddress.equals(that.publicAddress) : that.publicAddress == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = privateAddress != null ? privateAddress.hashCode() : 0;
+        result = 31 * result + (publicAddress != null ? publicAddress.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "GcpAddress{" +
                 "privateAddress='" + privateAddress + '\'' +

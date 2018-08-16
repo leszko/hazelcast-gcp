@@ -29,8 +29,9 @@ import static org.junit.Assert.assertEquals;
 
 public class GcpMetadataApiTest {
     private static final int PORT = 8089;
-    private static final String PROJECT = "project1";
+    private static final String PROJECT = "project-1";
     private static final String ZONE = "us-east1-b";
+    private static final String ACCESS_TOKEN = "ya29.c.Elr6BVAeC2CeahNthgBf6Nn8j66IfIfZV6eb0LTkDeoAzELseUL5pFmfq0K_ViJN8BaeVB6b16NNCiPB0YbWPnoHRC2I1ghmnknUTzL36t-79b_OitEF_q_C1GM";
 
     private final GcpMetadataApi gcpMetadataApi = new GcpMetadataApi(String.format("http://localhost:%s", PORT));
 
@@ -96,5 +97,37 @@ public class GcpMetadataApiTest {
     private static String zoneResponse(String zone) {
         String sampleProjectId = "183928891381";
         return String.format("projects/%s/zones/%s", sampleProjectId, zone);
+    }
+
+    @Test
+    public void accessToken() {
+        // given
+        stubFor(get(urlEqualTo("/computeMetadata/v1/instance/service-accounts/default/token"))
+                .withHeader("Metadata-Flavor", equalTo("Google"))
+                .willReturn(aResponse().withStatus(200).withBody(accessTokenResponse(ACCESS_TOKEN))));
+
+        // when
+        String result = gcpMetadataApi.accessToken();
+
+        // then
+        assertEquals(ACCESS_TOKEN, result);
+    }
+
+    @Test(expected = GcpApiException.class)
+    public void accessTokenFailure() {
+        // given
+        stubFor(get(urlEqualTo("/computeMetadata/v1/instance/service-accounts/default/token"))
+                .withHeader("Metadata-Flavor", equalTo("Google"))
+                .willReturn(aResponse().withStatus(500).withBody("Internal error")));
+
+        // when
+        gcpMetadataApi.accessToken();
+
+        // then
+        // throw exception
+    }
+
+    private static String accessTokenResponse(String accessToken) {
+        return String.format("{\"access_token\":\"%s\",\"expires_in\":3599,\"token_type\":\"Bearer\"}", accessToken);
     }
 }

@@ -16,10 +16,7 @@
 
 package com.hazelcast.gcp;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Scanner;
+import com.eclipsesource.json.Json;
 
 /**
  * Responsible for connecting to the Google Cloud Instance Metadata API.
@@ -28,8 +25,6 @@ import java.util.Scanner;
  */
 class GcpMetadataApi {
     private static final String METADATA_ENDPOINT = "http://metadata.google.internal";
-
-    private static final int HTTP_OK = 200;
 
     private final String endpoint;
 
@@ -60,31 +55,17 @@ class GcpMetadataApi {
         return parts[parts.length - 1];
     }
 
-    private static String callGet(String urlString) {
-        HttpURLConnection connection = null;
-        try {
-            URL url = new URL(urlString);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Metadata-Flavor", "Google");
-
-            if (connection.getResponseCode() != HTTP_OK) {
-                throw new GcpApiException(String.format("Failure executing: GET at: %s. Message: %s,", urlString,
-                        read(connection.getErrorStream())));
-            }
-            return read(connection.getInputStream());
-        } catch (Exception e) {
-            throw new GcpApiException("Failure in while using Google Cloud API", e);
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
+    String accessToken() {
+        String urlString = String.format("%s/computeMetadata/v1/instance/service-accounts/default/token", endpoint);
+        String accessTokenResponse = callGet(urlString);
+        return extractAccessToken(accessTokenResponse);
     }
 
-    private static String read(InputStream stream) {
-        Scanner scanner = new Scanner(stream, "UTF-8");
-        scanner.useDelimiter("\\Z");
-        return scanner.next();
+    private static String extractAccessToken(String accessTokenResponse) {
+        return Json.parse(accessTokenResponse).asObject().get("access_token").asString();
+    }
+
+    private static String callGet(String urlString) {
+        return GcpRestClient.create(urlString).withHeader("Metadata-Flavor", "Google").get();
     }
 }
