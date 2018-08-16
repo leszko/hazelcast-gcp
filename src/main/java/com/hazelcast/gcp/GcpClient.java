@@ -17,16 +17,51 @@
 package com.hazelcast.gcp;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+
+import static java.util.Arrays.asList;
 
 class GcpClient {
+    private static final int RETRIES = 10;
+
+    private final GcpMetadataApi gcpMetadataApi;
+
     private final List<String> projects;
     private final List<String> zones;
     private final String label;
 
     GcpClient(GcpMetadataApi gcpMetadataApi, GcpConfig gcpConfig) {
-        projects = null;
+        this.gcpMetadataApi = gcpMetadataApi;
+
+        projects = projectFromConfigOrMetadataApi(gcpConfig);
         zones = null;
-        label = null;
+        label = gcpConfig.getLabel();
+    }
+
+    private List<String> projectFromConfigOrMetadataApi(final GcpConfig gcpConfig) {
+        if (!gcpConfig.getProjects().isEmpty()) {
+            return gcpConfig.getProjects();
+        }
+        return asList(RetryUtils.retry(new Callable<String>() {
+            @Override
+            public String call()
+                    throws Exception {
+                return gcpMetadataApi.currentProject();
+            }
+        }, RETRIES));
+    }
+
+    private List<String> zonesFromConfigOrMetadataApi(final GcpConfig gcpConfig) {
+        if (!gcpConfig.getZones().isEmpty()) {
+            return gcpConfig.getProjects();
+        }
+        return asList(RetryUtils.retry(new Callable<String>() {
+            @Override
+            public String call()
+                    throws Exception {
+                return gcpMetadataApi.currentZone();
+            }
+        }, RETRIES));
     }
 
     List<GcpAddress> getAddresses() {
