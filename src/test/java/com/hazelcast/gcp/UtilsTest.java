@@ -18,12 +18,12 @@ package com.hazelcast.gcp;
 
 import org.junit.Test;
 
-import static com.hazelcast.gcp.GcpUtils.splitByComma;
+import static com.hazelcast.gcp.Utils.splitByComma;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 
-public class GcpUtilsTest {
+public class UtilsTest {
     @Test
     public void splitByCommaTest() {
         assertEquals(asList("project1", "project2"), splitByComma("project1,project2"));

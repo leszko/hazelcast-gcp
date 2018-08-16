@@ -16,22 +16,18 @@
 
 package com.hazelcast.gcp;
 
-import java.util.Collections;
-import java.util.List;
-
-import static java.util.Arrays.asList;
+import com.hazelcast.core.HazelcastException;
 
 /**
- * Utility methods for GCP Discovery Strategy plugin.
+ * Exception to indicate any issues with Google Cloud API.
  */
-final class GcpUtils {
-    private GcpUtils() {
+class GcpApiException
+        extends HazelcastException {
+    GcpApiException(String message) {
+        super(message);
     }
 
-    static List<String> splitByComma(String string) {
-        if (string == null) {
-            return Collections.emptyList();
-        }
-        return asList(string.split(","));
+    GcpApiException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

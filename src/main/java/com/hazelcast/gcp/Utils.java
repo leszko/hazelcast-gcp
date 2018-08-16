@@ -16,20 +16,22 @@
 
 package com.hazelcast.gcp;
 
+import java.util.Collections;
 import java.util.List;
 
-class GcpClient {
-    private final List<String> projects;
-    private final List<String> zones;
-    private final String label;
+import static java.util.Arrays.asList;
 
-    GcpClient(GcpMetadataApi gcpMetadataApi, GcpConfig gcpConfig) {
-        projects = null;
-        zones = null;
-        label = null;
+/**
+ * Utility methods for GCP Discovery Strategy plugin.
+ */
+final class Utils {
+    private Utils() {
     }
 
-    List<GcpAddress> getAddresses() {
-        return null;
+    static List<String> splitByComma(String string) {
+        if (string == null) {
+            return Collections.emptyList();
+        }
+        return asList(string.split(","));
     }
 }

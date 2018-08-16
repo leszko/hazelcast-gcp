@@ -35,7 +35,7 @@ import static com.hazelcast.gcp.GcpProperties.LABEL;
 import static com.hazelcast.gcp.GcpProperties.PORT;
 import static com.hazelcast.gcp.GcpProperties.PROJECTS;
 import static com.hazelcast.gcp.GcpProperties.ZONES;
-import static com.hazelcast.gcp.GcpUtils.splitByComma;
+import static com.hazelcast.gcp.Utils.splitByComma;
 
 /**
  * GCP implementation of {@link DiscoveryStrategy}.
@@ -51,7 +51,8 @@ public class GcpDiscoveryStrategy
         super(LOGGER, properties);
         try {
             GcpConfig gcpConfig = createGcpConfig();
-            this.gcpClient = new GcpClient(gcpConfig);
+            GcpMetadataApi gcpMetadataApi = new GcpMetadataApi();
+            this.gcpClient = new GcpClient(gcpMetadataApi, gcpConfig);
             this.portRange = gcpConfig.getHzPort();
         } catch (IllegalArgumentException e) {
             throw new InvalidConfigurationException("Invalid GCP Discovery Strategy configuration", e);
