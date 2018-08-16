@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 class GcpClient {
-    GcpClient(Map<String, Comparable> properties) {
+    GcpClient(GcpConfig gcpConfig) {
 
     }
 

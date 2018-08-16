@@ -16,28 +16,18 @@
 
 package com.hazelcast.gcp;
 
-final class GcpAddress {
-    private final String privateAddress;
-    private final String publicAddress;
+import org.junit.Test;
 
-    public GcpAddress(String privateAddress, String publicAddress) {
-        this.privateAddress = privateAddress;
-        this.publicAddress = publicAddress;
-    }
+import static com.hazelcast.gcp.GcpUtils.splitByComma;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static org.junit.Assert.assertEquals;
 
-    public String getPrivateAddress() {
-        return privateAddress;
-    }
-
-    public String getPublicAddress() {
-        return publicAddress;
-    }
-
-    @Override
-    public String toString() {
-        return "GcpAddress{" +
-                "privateAddress='" + privateAddress + '\'' +
-                ", publicAddress='" + publicAddress + '\'' +
-                '}';
+public class GcpUtilsTest {
+    @Test
+    public void splitByCommaTest() {
+        assertEquals(asList("project1", "project2"), splitByComma("project1,project2"));
+        assertEquals(asList("project1"), splitByComma("project1"));
+        assertEquals(emptyList(), splitByComma(null));
     }
 }

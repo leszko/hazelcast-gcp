@@ -16,28 +16,22 @@
 
 package com.hazelcast.gcp;
 
-final class GcpAddress {
-    private final String privateAddress;
-    private final String publicAddress;
+import java.util.Collections;
+import java.util.List;
 
-    public GcpAddress(String privateAddress, String publicAddress) {
-        this.privateAddress = privateAddress;
-        this.publicAddress = publicAddress;
+import static java.util.Arrays.asList;
+
+/**
+ * Utility methods for GCP Discovery Strategy plugin.
+ */
+final class GcpUtils {
+    private GcpUtils() {
     }
 
-    public String getPrivateAddress() {
-        return privateAddress;
-    }
-
-    public String getPublicAddress() {
-        return publicAddress;
-    }
-
-    @Override
-    public String toString() {
-        return "GcpAddress{" +
-                "privateAddress='" + privateAddress + '\'' +
-                ", publicAddress='" + publicAddress + '\'' +
-                '}';
+    static List<String> splitByComma(String string) {
+        if (string == null) {
+            return Collections.emptyList();
+        }
+        return asList(string.split(","));
     }
 }

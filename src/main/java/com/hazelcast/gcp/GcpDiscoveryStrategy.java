@@ -31,7 +31,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.hazelcast.gcp.GcpProperties.LABEL;
 import static com.hazelcast.gcp.GcpProperties.PORT;
+import static com.hazelcast.gcp.GcpProperties.PROJECTS;
+import static com.hazelcast.gcp.GcpProperties.ZONES;
+import static com.hazelcast.gcp.GcpUtils.splitByComma;
 
 /**
  * GCP implementation of {@link DiscoveryStrategy}.
@@ -46,8 +50,9 @@ public class GcpDiscoveryStrategy
     public GcpDiscoveryStrategy(Map<String, Comparable> properties) {
         super(LOGGER, properties);
         try {
-            this.gcpClient = new GcpClient(properties);
-            this.portRange = createPortRange();
+            GcpConfig gcpConfig = createGcpConfig();
+            this.gcpClient = new GcpClient(gcpConfig);
+            this.portRange = gcpConfig.getHzPort();
         } catch (IllegalArgumentException e) {
             throw new InvalidConfigurationException("Invalid GCP Discovery Strategy configuration", e);
         }
@@ -59,11 +64,20 @@ public class GcpDiscoveryStrategy
     GcpDiscoveryStrategy(Map<String, Comparable> properties, GcpClient gcpClient) {
         super(LOGGER, properties);
         this.gcpClient = gcpClient;
-        this.portRange = createPortRange();
+        this.portRange = createGcpConfig().getHzPort();
     }
 
-    private PortRange createPortRange() {
-        return new PortRange((String) getOrDefault(PORT.getDefinition(), PORT.getDefaultValue()));
+    private GcpConfig createGcpConfig() {
+        return GcpConfig.builder()
+                        .setProjects(splitByComma(getOrNull(PROJECTS)))
+                        .setZones(splitByComma((getOrNull(ZONES))))
+                        .setLabel(getOrNull(LABEL))
+                        .setHzPort(new PortRange((String) getOrDefault(PORT.getDefinition(), PORT.getDefaultValue())))
+                        .build();
+    }
+
+    private String getOrNull(GcpProperties gcpProperties) {
+        return getOrNull(gcpProperties.getDefinition());
     }
 
     @Override
