@@ -16,6 +16,9 @@
 
 package com.hazelcast.gcp;
 
+import com.hazelcast.logging.ILogger;
+import com.hazelcast.logging.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -23,6 +26,8 @@ import java.util.concurrent.Callable;
 import static java.util.Arrays.asList;
 
 class GcpClient {
+    private static final ILogger LOGGER = Logger.getLogger(GcpDiscoveryStrategy.class);
+
     private static final int RETRIES = 10;
 
     private final GcpMetadataApi gcpMetadataApi;
@@ -45,6 +50,7 @@ class GcpClient {
         if (!gcpConfig.getProjects().isEmpty()) {
             return gcpConfig.getProjects();
         }
+        LOGGER.finest("Property 'projects' not configured, fetching the current GCP project");
         return asList(RetryUtils.retry(new Callable<String>() {
             @Override
             public String call()
@@ -58,6 +64,7 @@ class GcpClient {
         if (!gcpConfig.getZones().isEmpty()) {
             return gcpConfig.getZones();
         }
+        LOGGER.finest("Property 'zones' not configured, fetching the current GCP zone");
         return asList(RetryUtils.retry(new Callable<String>() {
             @Override
             public String call()
@@ -68,6 +75,7 @@ class GcpClient {
     }
 
     List<GcpAddress> getAddresses() {
+        LOGGER.finest("Fetching OAuth Access Token");
         final String accessToken = RetryUtils.retry(new Callable<String>() {
             @Override
             public String call()
@@ -79,6 +87,7 @@ class GcpClient {
         List<GcpAddress> result = new ArrayList<GcpAddress>();
         for (final String project : projects) {
             for (final String zone : zones) {
+                LOGGER.finest(String.format("Fetching instances for project '%s' and zone '%s'", project, zone));
                 List<GcpAddress> addresses = RetryUtils.retry(new Callable<List<GcpAddress>>() {
                     @Override
                     public List<GcpAddress> call()
@@ -86,6 +95,8 @@ class GcpClient {
                         return gcpComputeApi.instances(project, zone, label, accessToken);
                     }
                 }, RETRIES);
+                LOGGER.finest(String.format("Found the following instances for project '%s' and zone '%s': %s", project, zone,
+                        addresses));
                 result.addAll(addresses);
             }
         }
