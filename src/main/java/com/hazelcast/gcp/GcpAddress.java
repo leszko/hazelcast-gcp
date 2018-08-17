@@ -59,9 +59,9 @@ final class GcpAddress {
 
     @Override
     public String toString() {
-        return "GcpAddress{" +
-                "privateAddress='" + privateAddress + '\'' +
-                ", publicAddress='" + publicAddress + '\'' +
-                '}';
+        return "GcpAddress{"
+                + "privateAddress='" + privateAddress + '\''
+                + ", publicAddress='" + publicAddress + '\''
+                + '}';
     }
 }

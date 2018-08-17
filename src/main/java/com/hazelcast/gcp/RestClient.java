@@ -75,7 +75,7 @@ final class RestClient {
         return scanner.next();
     }
 
-    private static class Header {
+    private static final class Header {
         private final String key;
         private final String value;
 

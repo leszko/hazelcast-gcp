@@ -56,7 +56,7 @@ final class GcpConfig {
         return new Builder();
     }
 
-    final static class Builder {
+    static final class Builder {
         private List<String> projects = new ArrayList<String>();
         private List<String> zones = new ArrayList<String>();
         private String label;
