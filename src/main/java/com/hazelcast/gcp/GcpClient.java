@@ -16,6 +16,7 @@
 
 package com.hazelcast.gcp;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -36,7 +37,7 @@ class GcpClient {
         this.gcpComputeApi = gcpComputeApi;
 
         projects = projectFromConfigOrMetadataApi(gcpConfig);
-        zones = null;
+        zones = zonesFromConfigOrMetadataApi(gcpConfig);
         label = gcpConfig.getLabel();
     }
 
@@ -55,7 +56,7 @@ class GcpClient {
 
     private List<String> zonesFromConfigOrMetadataApi(final GcpConfig gcpConfig) {
         if (!gcpConfig.getZones().isEmpty()) {
-            return gcpConfig.getProjects();
+            return gcpConfig.getZones();
         }
         return asList(RetryUtils.retry(new Callable<String>() {
             @Override
@@ -67,6 +68,27 @@ class GcpClient {
     }
 
     List<GcpAddress> getAddresses() {
-        return null;
+        final String accessToken = RetryUtils.retry(new Callable<String>() {
+            @Override
+            public String call()
+                    throws Exception {
+                return gcpMetadataApi.accessToken();
+            }
+        }, RETRIES);
+
+        List<GcpAddress> result = new ArrayList<GcpAddress>();
+        for (final String project : projects) {
+            for (final String zone : zones) {
+                List<GcpAddress> addresses = RetryUtils.retry(new Callable<List<GcpAddress>>() {
+                    @Override
+                    public List<GcpAddress> call()
+                            throws Exception {
+                        return gcpComputeApi.instances(project, zone, label, accessToken);
+                    }
+                }, RETRIES);
+                result.addAll(addresses);
+            }
+        }
+        return result;
     }
 }

@@ -16,6 +16,7 @@
 
 package com.hazelcast.gcp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,8 +57,8 @@ final class GcpConfig {
     }
 
     final static class Builder {
-        private List<String> projects;
-        private List<String> zones;
+        private List<String> projects = new ArrayList<String>();
+        private List<String> zones = new ArrayList<String>();
         private String label;
         private PortRange hzPort;
 
