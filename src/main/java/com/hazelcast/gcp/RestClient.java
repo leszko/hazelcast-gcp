@@ -84,11 +84,11 @@ final class RestClient {
             this.value = value;
         }
 
-        public String getKey() {
+        private String getKey() {
             return key;
         }
 
-        public String getValue() {
+        private String getValue() {
             return value;
         }
     }

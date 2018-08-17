@@ -47,7 +47,7 @@ public class GcpDiscoveryStrategy
     private final GcpClient gcpClient;
     private final PortRange portRange;
 
-    public GcpDiscoveryStrategy(Map<String, Comparable> properties) {
+    GcpDiscoveryStrategy(Map<String, Comparable> properties) {
         super(LOGGER, properties);
         try {
             GcpConfig gcpConfig = createGcpConfig();

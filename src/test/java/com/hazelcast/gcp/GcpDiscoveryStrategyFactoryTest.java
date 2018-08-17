@@ -34,7 +34,7 @@ public class GcpDiscoveryStrategyFactoryTest {
     @Test
     public void validConfiguration() {
         DiscoveryStrategy strategy = createStrategy("test-gcp-config.xml");
-        assertTrue(strategy != null && strategy instanceof GcpDiscoveryStrategy);
+        assertTrue(strategy instanceof GcpDiscoveryStrategy);
     }
 
     @Test(expected = RuntimeException.class)

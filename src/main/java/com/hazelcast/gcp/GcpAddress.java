@@ -20,16 +20,16 @@ final class GcpAddress {
     private final String privateAddress;
     private final String publicAddress;
 
-    public GcpAddress(String privateAddress, String publicAddress) {
+    GcpAddress(String privateAddress, String publicAddress) {
         this.privateAddress = privateAddress;
         this.publicAddress = publicAddress;
     }
 
-    public String getPrivateAddress() {
+    String getPrivateAddress() {
         return privateAddress;
     }
 
-    public String getPublicAddress() {
+    String getPublicAddress() {
         return publicAddress;
     }
 

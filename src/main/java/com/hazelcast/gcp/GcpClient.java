@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 class GcpClient {
     private static final ILogger LOGGER = Logger.getLogger(GcpDiscoveryStrategy.class);
@@ -51,10 +51,9 @@ class GcpClient {
             return gcpConfig.getProjects();
         }
         LOGGER.finest("Property 'projects' not configured, fetching the current GCP project");
-        return asList(RetryUtils.retry(new Callable<String>() {
+        return singletonList(RetryUtils.retry(new Callable<String>() {
             @Override
-            public String call()
-                    throws Exception {
+            public String call() {
                 return gcpMetadataApi.currentProject();
             }
         }, RETRIES));
@@ -65,10 +64,9 @@ class GcpClient {
             return gcpConfig.getZones();
         }
         LOGGER.finest("Property 'zones' not configured, fetching the current GCP zone");
-        return asList(RetryUtils.retry(new Callable<String>() {
+        return singletonList(RetryUtils.retry(new Callable<String>() {
             @Override
-            public String call()
-                    throws Exception {
+            public String call() {
                 return gcpMetadataApi.currentZone();
             }
         }, RETRIES));
@@ -78,8 +76,7 @@ class GcpClient {
         LOGGER.finest("Fetching OAuth Access Token");
         final String accessToken = RetryUtils.retry(new Callable<String>() {
             @Override
-            public String call()
-                    throws Exception {
+            public String call() {
                 return gcpMetadataApi.accessToken();
             }
         }, RETRIES);
@@ -90,8 +87,7 @@ class GcpClient {
                 LOGGER.finest(String.format("Fetching instances for project '%s' and zone '%s'", project, zone));
                 List<GcpAddress> addresses = RetryUtils.retry(new Callable<List<GcpAddress>>() {
                     @Override
-                    public List<GcpAddress> call()
-                            throws Exception {
+                    public List<GcpAddress> call() {
                         return gcpComputeApi.instances(project, zone, label, accessToken);
                     }
                 }, RETRIES);
