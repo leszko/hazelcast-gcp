@@ -24,7 +24,7 @@ import com.hazelcast.util.ExceptionUtil;
 import java.util.concurrent.Callable;
 
 /**
- * Static utility class to retry operations related to connecting to GCP Services.
+ * Static utility class to retry operations.
  */
 public final class RetryUtils {
     static final long INITIAL_BACKOFF_MS = 1500L;
@@ -41,7 +41,7 @@ public final class RetryUtils {
     /**
      * Calls {@code callable.call()} until it does not throw an exception (but no more than {@code retries} times).
      * <p>
-     * Note that {@code callable} should be an idempotent operation which is a call to the GCP Service.
+     * Note that {@code callable} should be an idempotent operation.
      * <p>
      * If {@code callable} throws an unchecked exception, it is wrapped into {@link HazelcastException}.
      */
@@ -56,7 +56,7 @@ public final class RetryUtils {
                     throw ExceptionUtil.rethrow(e);
                 }
                 long waitIntervalMs = backoffIntervalForRetry(retryCount);
-                LOGGER.warning(String.format("Couldn't connect to the GCP service, [%s] retrying in %s seconds...", retryCount,
+                LOGGER.warning(String.format("Couldn't connect to the service, [%s] retrying in %s seconds...", retryCount,
                         waitIntervalMs / MS_IN_SECOND));
                 sleep(waitIntervalMs);
             }

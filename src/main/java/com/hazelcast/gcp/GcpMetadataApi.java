@@ -66,6 +66,6 @@ class GcpMetadataApi {
     }
 
     private static String callGet(String urlString) {
-        return GcpRestClient.create(urlString).withHeader("Metadata-Flavor", "Google").get();
+        return RestClient.create(urlString).withHeader("Metadata-Flavor", "Google").get();
     }
 }

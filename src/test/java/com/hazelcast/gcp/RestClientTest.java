@@ -27,7 +27,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertEquals;
 
-public class GcpRestClientTest {
+public class RestClientTest {
     private static final int PORT = 8089;
     private static final String ADDRESS = String.format("http://localhost:%s", PORT);
     private static final String API_ENDPOINT = "/some/endpoint";
@@ -43,7 +43,7 @@ public class GcpRestClientTest {
                 .willReturn(aResponse().withStatus(200).withBody(BODY_RESPONSE)));
 
         // when
-        String result = GcpRestClient.create(String.format("%s%s", ADDRESS, API_ENDPOINT)).get();
+        String result = RestClient.create(String.format("%s%s", ADDRESS, API_ENDPOINT)).get();
 
         // then
         assertEquals(BODY_RESPONSE, result);
@@ -59,22 +59,22 @@ public class GcpRestClientTest {
                 .willReturn(aResponse().withStatus(200).withBody(BODY_RESPONSE)));
 
         // when
-        String result = GcpRestClient.create(String.format("%s%s", ADDRESS, API_ENDPOINT))
-                                     .withHeader(headerKey, headerValue)
-                                     .get();
+        String result = RestClient.create(String.format("%s%s", ADDRESS, API_ENDPOINT))
+                                  .withHeader(headerKey, headerValue)
+                                  .get();
 
         // then
         assertEquals(BODY_RESPONSE, result);
     }
 
-    @Test(expected = GcpApiException.class)
+    @Test(expected = RestClientException.class)
     public void getFailure() {
         // given
         stubFor(get(urlEqualTo(API_ENDPOINT))
                 .willReturn(aResponse().withStatus(500).withBody("Internal error")));
 
         // when
-        GcpRestClient.create(String.format("%s%s", ADDRESS, API_ENDPOINT)).get();
+        RestClient.create(String.format("%s%s", ADDRESS, API_ENDPOINT)).get();
 
         // then
         // throw exception

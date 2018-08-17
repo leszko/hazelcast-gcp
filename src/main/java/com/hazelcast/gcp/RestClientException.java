@@ -16,18 +16,16 @@
 
 package com.hazelcast.gcp;
 
-import com.hazelcast.core.HazelcastException;
-
 /**
- * Exception to indicate any issues with Google Cloud API.
+ * Exception to indicate any issues while executing a REST call.
  */
-class GcpApiException
-        extends HazelcastException {
-    GcpApiException(String message) {
+class RestClientException
+        extends RuntimeException {
+    RestClientException(String message) {
         super(message);
     }
 
-    GcpApiException(String message, Throwable cause) {
+    RestClientException(String message, Throwable cause) {
         super(message, cause);
     }
 }

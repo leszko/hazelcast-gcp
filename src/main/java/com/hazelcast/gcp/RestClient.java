@@ -26,21 +26,21 @@ import java.util.Scanner;
 /**
  * Utility class for making REST calls.
  */
-final class GcpRestClient {
+final class RestClient {
     private static final int HTTP_OK = 200;
 
     private final String url;
     private final List<Header> headers = new ArrayList<Header>();
 
-    private GcpRestClient(String url) {
+    private RestClient(String url) {
         this.url = url;
     }
 
-    static GcpRestClient create(String url) {
-        return new GcpRestClient(url);
+    static RestClient create(String url) {
+        return new RestClient(url);
     }
 
-    GcpRestClient withHeader(String key, String value) {
+    RestClient withHeader(String key, String value) {
         headers.add(new Header(key, value));
         return this;
     }
@@ -56,12 +56,12 @@ final class GcpRestClient {
             }
 
             if (connection.getResponseCode() != HTTP_OK) {
-                throw new GcpApiException(String.format("Failure executing: GET at: %s. Message: %s,", url,
+                throw new RestClientException(String.format("Failure executing: GET at: %s. Message: %s,", url,
                         read(connection.getErrorStream())));
             }
             return read(connection.getInputStream());
         } catch (Exception e) {
-            throw new GcpApiException("Failure in while using Google Cloud API", e);
+            throw new RestClientException("Failure in executing REST call", e);
         } finally {
             if (connection != null) {
                 connection.disconnect();

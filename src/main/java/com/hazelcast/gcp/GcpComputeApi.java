@@ -40,7 +40,7 @@ class GcpComputeApi {
     }
 
     List<GcpAddress> instances(String project, String zone, String label, String accessToken) {
-        String response = GcpRestClient
+        String response = RestClient
                 .create(urlFor(project, zone, label))
                 .withHeader("Authorization", String.format("OAuth %s", accessToken))
                 .get();
